@@ -10,6 +10,8 @@ namespace Editor.TodoList
     [InitializeOnLoad]
     public static class TodoListHierarchy
     {
+        private static Rect _dragButtonRect;
+
         static TodoListHierarchy()
         {
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
@@ -43,15 +45,15 @@ namespace Editor.TodoList
             if (windowPos.width == 0 || windowPos.height == 0)
                 return;
 
-            // 在窗口右下角绘制按钮
+            // 将按钮固定在窗口底部（非常靠近底部边缘）
             var buttonWidth = 80f;
             var buttonHeight = 30f;
-            var buttonX = windowPos.width - buttonWidth - 15;
-            var buttonY = windowPos.height - buttonHeight - 50;
-            var buttonRect = new Rect(buttonX, buttonY, buttonWidth, buttonHeight);
+            var buttonX = windowPos.width - buttonWidth - 10;
+            var buttonY = windowPos.height - buttonHeight - 20;
+            _dragButtonRect = new Rect(buttonX, buttonY, buttonWidth, buttonHeight);
 
             // 检测拖拽
-            HandleDragAndDrop(buttonRect);
+            HandleDragAndDrop(_dragButtonRect);
 
             // 绘制按钮
             var currentEvent = Event.current;
@@ -60,7 +62,7 @@ namespace Editor.TodoList
                 // 绘制高亮背景
                 var bgColor = GUI.backgroundColor;
                 GUI.backgroundColor = new Color(0.4f, 0.8f, 1f);
-                GUI.Box(buttonRect, "");
+                GUI.Box(_dragButtonRect, "");
                 GUI.backgroundColor = bgColor;
 
                 // 绘制文字
@@ -70,7 +72,7 @@ namespace Editor.TodoList
                     fontStyle = FontStyle.Bold,
                     alignment = TextAnchor.MiddleCenter
                 };
-                GUI.Label(buttonRect, "拖拽至此", style);
+                GUI.Label(_dragButtonRect, "拖拽至此", style);
             }
         }
 

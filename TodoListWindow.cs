@@ -72,11 +72,61 @@ namespace Editor.TodoList
                 GUILayout.Label("TodoList 待办事项管理", EditorStyles.boldLabel, GUILayout.Height(25));
                 GUILayout.FlexibleSpace();
 
+                if (GUILayout.Button("添加", EditorStyles.miniButton, GUILayout.Width(60)))
+                {
+                    AddNewTodoItem();
+                }
+
                 if (GUILayout.Button("刷新", EditorStyles.miniButton, GUILayout.Width(60)))
                 {
                     RefreshTodoItems();
                 }
             }
+        }
+
+        /// <summary>
+        /// 添加新的文本类型待办事项
+        /// </summary>
+        private void AddNewTodoItem()
+        {
+            if (_config == null)
+            {
+                LoadConfig();
+            }
+
+            // 创建独立的ScriptableObject文件
+            var item = ScriptableObject.CreateInstance<TodoItem>();
+            item.Description = "新待办事项";
+            item.Status = TodoStatus.Pending;
+            item.Type = TodoType.Text;
+            item.CreateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            item.UpdateTime = "";
+            item.AssetGuid = "";
+            item.ScenePath = "";
+            item.GameObjectPath = "";
+            item.PrefabChildPath = "";
+
+            // 生成唯一文件名
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var fileName = $"Todo_{timestamp}_New";
+
+            // 保存到独立文件
+            var folderPath = "Assets/Editor/TodoList/Items";
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            var assetPath = $"{folderPath}/{fileName}.asset";
+            AssetDatabase.CreateAsset(item, assetPath);
+
+            // 添加到配置列表
+            _config.TodoItems.Add(item);
+            EditorUtility.SetDirty(_config);
+            AssetDatabase.SaveAssets();
+
+            Debug.Log($"[TodoList] 已添加新的待办事项: {item.Description}");
+            Repaint();
         }
 
         /// <summary>
