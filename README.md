@@ -1,142 +1,19 @@
-# TodoList 编辑器工具
+# MIDA Editor Todo
 
-## 简介
+Todo 编辑器窗口独立包。代码、UXML、USS 位于本包；可写数据固定在宿主项目 `Assets/Editor/TodoList/`。
 
-TodoList 是一个用于Unity编辑器的待办事项管理工具，帮助开发团队追踪需要修复的问题、待验证的功能和已完成的任务。每条TODO独立存储为ScriptableObject，避免数据冲突。
+## 要求
 
-## 功能特性
+- Unity 2021.3.15f1
+- Sirenix Odin Inspector Editor 程序集可用
 
-### 1. 独立存储架构
-- 每条TODO作为独立的 `.asset` 文件存储在 `Assets/Editor/TodoList/Items/` 目录下
-- 通过 `TodoListConfig.asset` 管理所有TODO的引用
-- 多人协作时避免文件冲突
+## 集成
 
-### 2. 待办事项管理
-- **三种状态**：待修复、待验证、已修复
-- **三种类型**：资源引用、场景物体、纯文本
-- **状态筛选**：可按状态筛选显示
-- **搜索功能**：支持按描述搜索待办事项
-- **统计信息**：实时显示各状态待办数量
+在 `Packages/manifest.json` 中加入：
 
-### 3. 标题编辑
-- 描述/标题可以直接在窗口中编辑
-- 修改后自动保存到对应的ScriptableObject
+`"com.mida.editor.todo": "file:../LocalPackage/com.mida.editor.todo"`
 
-### 4. 评论系统
-- 每条TODO支持添加多条评论
-- 评论显示作者和时间
-- 支持删除单条评论
-- 可展开/收起评论区域
+## 数据位置
 
-### 5. 添加待办的方式
-
-#### 方式一：通过Project窗口添加资源引用
-1. 在Project窗口中选中一个资源
-2. 右键 -> `Add to TodoList` -> `添加资源引用 (待修复/待验证)`
-3. 输入问题描述
-4. 点击确定
-
-保存的是资源的GUID引用，即使资源移动位置也能正确找到。
-
-#### 方式二：通过Hierarchy窗口添加场景物体
-1. 在Hierarchy窗口中选中一个场景物体
-2. 右键 -> `Add to TodoList` -> `添加场景物体 (待修复/待验证)`
-3. 输入问题描述
-4. 点击确定
-
-保存的是场景路径和物体层级路径，点击定位时自动打开对应场景。
-
-#### 方式三：添加纯文本待办
-1. 点击菜单 `GameConsole` -> `TodoList` -> `添加纯文本待办`
-2. 输入描述
-3. 点击确定
-
-### 6. 待办操作
-- **状态切换**：直接在下拉框中切换状态
-- **定位资源/物体**：点击"定位"按钮快速跳转到对应资源或场景物体
-- **删除待办**：点击"删除"按钮移除待办事项（会删除对应的.asset文件）
-
-## 文件结构
-
-```
-Assets/Editor/TodoList/
-├── TodoList.asmdef           # 程序集定义
-├── TodoItem.cs               # 待办项ScriptableObject类
-├── TodoListConfig.cs         # 配置存储（ScriptableObject）
-├── TodoListWindow.cs         # 编辑器窗口
-├── TodoListMenuItems.cs      # 右键菜单
-├── TodoListConfig.asset      # 配置数据文件（自动生成）
-├── Items/                    # 待办事项独立存储目录
-│   ├── Todo_20250123_143022_修复某个bug.asset
-│   ├── Todo_20250123_143125_检查某个功能.asset
-│   └── ...
-└── README.md                 # 使用说明
-```
-
-## 使用说明
-
-### 打开窗口
-通过菜单栏打开：`GameConsole` -> `TodoList`
-
-### 窗口界面
-
-窗口顶部包含：
-- **刷新按钮**：重新加载配置文件
-- **筛选下拉框**：选择要显示的状态
-- **仅显示当前状态**：勾选后只显示选中状态的待办
-- **搜索框**：输入关键词搜索待办描述
-- **统计信息**：显示各状态待办数量
-
-待办列表中每项显示：
-- **状态**：可点击切换
-- **类型图标**：显示待办类型（资源/场景物体/纯文本）
-- **描述**：可直接编辑的待办标题
-- **创建时间**：待办添加的时间
-- **定位按钮**：跳转到对应资源或物体
-- **删除按钮**：删除该待办
-
-### 评论功能
-- 点击"展开评论"按钮展开评论区域
-- 显示已有评论列表（作者、时间、内容）
-- 每条评论右上角有"×"按钮可删除
-- 底部有输入框可添加新评论
-
-### 数据存储
-
-- **配置文件**：`Assets/Editor/TodoList/TodoListConfig.asset`
-- **待办文件**：`Assets/Editor/TodoList/Items/Todo_时间戳_描述.asset`
-
-**注意**：这些文件不应手动修改，请通过编辑器窗口进行操作。
-
-## 开发说明
-
-### 程序集
-TodoList 使用独立的程序集定义 `TodoList.asmdef`，仅包含在Editor平台，依赖：
-- Unity Editor
-- Sirenix.OdinInspector.Editor
-
-### 扩展
-如需扩展功能，可以修改以下文件：
-
-- `TodoItem.cs`：添加新的待办类型或状态，添加评论功能
-- `TodoListWindow.cs`：修改窗口显示逻辑
-- `TodoListMenuItems.cs`：添加新的菜单项
-
-### 代码规范
-- 使用中文注释和说明
-- 遵循项目现有的命名规范
-- 使用 Odin Inspector 简化编辑器UI开发
-- 每条TODO独立存储为ScriptableObject避免冲突
-
-## 更新日志
-
-### v2.0
-- 重构架构，每条TODO独立存储为ScriptableObject
-- 添加评论系统，支持添加和删除评论
-- 支持直接编辑待办标题/描述
-- 避免多人协作时的文件冲突
-
-### v1.0
-- 基本的待办事项管理功能
-- 支持资源引用和场景物体
-- 状态筛选和搜索
+- `Assets/Editor/TodoList/TodoListConfig.asset`
+- `Assets/Editor/TodoList/Items/*.asset`

@@ -1,0 +1,6 @@
+{
+  "name": "com.mida.editor.todo",
+  "displayName": "MIDA Editor Todo",
+  "version": "1.0.0",
+  "description": "MIDA Todo editor window package. Code and UI resources live in the package; writable data stays under Assets/Editor/TodoList."
+}

@@ -1,0 +1,43 @@
+/* ==========================================================
+   TodoFilterBar.uss  —  筛选栏（状态 / 搜索）样式
+   ========================================================== */
+
+.filter-bar-row {
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+/* 固定宽度的前缀文字标签 */
+.filter-label {
+    width: 40px;
+    min-width: 40px;
+    flex-shrink: 0;
+}
+
+.filter-status-field {
+    width: 88px;
+    min-width: 88px;
+    height: 22px;
+    min-height: 22px;
+    flex-shrink: 0;
+}
+
+.filter-only-toggle {
+    width: 118px;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.filter-search-label {
+    margin-left: 8px;
+}
+
+.filter-search-field {
+    width: 220px;
+    flex-shrink: 0;
+}
+
+.stats-label {
+    margin-left: 8px;
+    flex-shrink: 0;
+}

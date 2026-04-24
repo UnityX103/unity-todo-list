@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="True">
+    <Style src="../USS/TodoWorkNote.uss" />
+    <ui:VisualElement name="WorkNotePanel" class="work-note-panel">
+        <ui:VisualElement name="WorkNoteHeader" class="row work-note-header">
+            <ui:Label text="当前正在做（快速记录）" class="bold-label-12" />
+            <ui:VisualElement class="spacer" />
+            <ui:Label name="WorkNoteTimeLabel" class="mini-label work-note-time" />
+            <ui:Button name="WorkNoteAddTodoBtn" text="添加到TODO" class="work-note-add-btn" />
+            <ui:Button name="WorkNoteClearBtn" text="清空" class="work-note-clear-btn" />
+        </ui:VisualElement>
+        <ui:TextField name="WorkNoteField" multiline="true" class="work-note-field" />
+    </ui:VisualElement>
+</ui:UXML>

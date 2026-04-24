@@ -154,11 +154,11 @@ namespace Editor.TodoList
             var prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabAssetPath);
             var defaultDescription = $"[{prefabName}/{obj.name}] - 请输入问题描述";
 
-            string newDescription = EditorInputDialog.Show("添加预制体子物体待办", "请输入描述:", defaultDescription);
-            if (string.IsNullOrEmpty(newDescription))
+            var input = TodoInputDialog.ShowWithOptions("添加预制体子物体待办", "请输入描述:", defaultDescription);
+            if (!input.Confirmed || string.IsNullOrWhiteSpace(input.Text))
                 return;
 
-            TodoListWindow.AddTodoItem(newDescription, TodoType.PrefabObject, prefabGuid, null, null, childPath);
+            TodoListWindow.AddTodoItem(input.Text.Trim(), TodoType.PrefabObject, prefabGuid, null, null, childPath);
         }
 
         private static string GetPrefabChildPath(GameObject obj, GameObject prefabRoot)
@@ -193,15 +193,20 @@ namespace Editor.TodoList
         private static void AddSceneObjectTodo(GameObject obj)
         {
             var scene = obj.scene;
-            var scenePath = scene.path;
             var gameObjectPath = GetGameObjectPath(obj);
             var defaultDescription = $"[{obj.name}] - 请输入问题描述";
 
-            string newDescription = EditorInputDialog.Show("添加待办", "请输入描述:", defaultDescription);
-            if (string.IsNullOrEmpty(newDescription))
+            var input = TodoInputDialog.ShowWithOptions("添加待办", "请输入描述:", defaultDescription,
+                showSaveAsScene: true);
+            if (!input.Confirmed || string.IsNullOrWhiteSpace(input.Text))
                 return;
 
-            TodoListWindow.AddTodoItem(newDescription, TodoType.SceneObject, null, scenePath, gameObjectPath);
+            if (!TodoSceneReferenceUtility.TryGetSceneReferenceForTodo(scene, input.SaveAsScene,
+                    out var targetScenePath, out var targetSceneGuid, out var isClonedSceneReference))
+                return;
+
+            TodoListWindow.AddTodoItem(input.Text.Trim(), TodoType.SceneObject, null, targetScenePath, gameObjectPath,
+                sceneGuid: targetSceneGuid, isClonedSceneReference: isClonedSceneReference);
         }
 
         private static void AddAssetTodo(UnityEngine.Object asset, string assetPath)
@@ -209,11 +214,11 @@ namespace Editor.TodoList
             var guid = AssetDatabase.GUIDFromAssetPath(assetPath).ToString();
             var defaultDescription = $"[{asset.name}] - 请输入问题描述";
 
-            string newDescription = EditorInputDialog.Show("添加待办", "请输入描述:", defaultDescription);
-            if (string.IsNullOrEmpty(newDescription))
+            var input = TodoInputDialog.ShowWithOptions("添加待办", "请输入描述:", defaultDescription);
+            if (!input.Confirmed || string.IsNullOrWhiteSpace(input.Text))
                 return;
 
-            TodoListWindow.AddTodoItem(newDescription, TodoType.Asset, guid, null, null);
+            TodoListWindow.AddTodoItem(input.Text.Trim(), TodoType.Asset, guid);
         }
 
         private static string GetGameObjectPath(GameObject obj)
@@ -233,63 +238,6 @@ namespace Editor.TodoList
             return path;
         }
 
-        /// <summary>
-        /// 简单的输入对话框
-        /// </summary>
-        private class EditorInputDialog : EditorWindow
-        {
-            private string _inputText = "";
-            private string _prompt;
-
-            public static string Show(string title, string prompt, string defaultText = "")
-            {
-                var window = CreateInstance<EditorInputDialog>();
-                window.titleContent = new GUIContent(title);
-                window._prompt = prompt;
-                window._inputText = defaultText;
-
-                var rect = new Rect(Screen.width * 0.5f - 200, Screen.height * 0.5f - 75, 400, 150);
-                window.position = rect;
-                window.ShowModal();
-
-                return window._inputText;
-            }
-
-            private void OnGUI()
-            {
-                if (Event.current.type == EventType.KeyUp &&
-                    (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter))
-                {
-                    Close();
-                    return;
-                }
-
-                EditorGUILayout.Space(5);
-                EditorGUILayout.LabelField(_prompt, EditorStyles.wordWrappedLabel);
-                EditorGUILayout.Space(10);
-
-                _inputText = EditorGUILayout.TextField(_inputText, GUILayout.Height(25));
-
-                EditorGUILayout.Space(10);
-
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    GUILayout.FlexibleSpace();
-
-                    if (GUILayout.Button("确定", GUILayout.Width(80)))
-                    {
-                        Close();
-                    }
-
-                    if (GUILayout.Button("取消", GUILayout.Width(80)))
-                    {
-                        _inputText = null;
-                        Close();
-                    }
-
-                    GUILayout.FlexibleSpace();
-                }
-            }
-        }
+        // 输入弹窗由 Editor.TodoList.TodoInputDialog 统一实现
     }
 }

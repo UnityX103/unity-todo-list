@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="True">
+    <Style src="../USS/TodoItemCard.uss" />
+    <ui:VisualElement name="ItemCard" class="item-card">
+        <ui:VisualElement name="ItemHeaderRow" class="row item-header-row">
+            <ui:DropdownField name="ItemStatusField" class="item-status-field" />
+            <ui:Toggle name="ItemPinToggle" label="置顶" class="item-pin-toggle" />
+            <ui:VisualElement name="ItemTypeIconSlot" class="item-type-icon-slot" />
+            <ui:TextField name="ItemDescField" class="item-desc-field" />
+            <ui:Label name="ItemTimeLabel" class="mini-label item-time-label" />
+            <ui:Button name="ItemSetCurrentBtn" text="设为当前执行" class="item-set-current-btn" />
+            <ui:Button name="ItemDeleteBtn" text="删除" class="item-delete-btn" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ItemDetailsSlot" class="item-details-slot" />
+        <ui:VisualElement name="ItemCommentsSlot" class="item-comments-slot" />
+    </ui:VisualElement>
+</ui:UXML>

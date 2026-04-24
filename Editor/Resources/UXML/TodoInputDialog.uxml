@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="DialogRoot" style="flex-direction: column; flex-grow: 1; padding-left: 12px; padding-right: 12px; padding-top: 10px; padding-bottom: 10px;">
+        <ui:VisualElement name="InputRow" style="flex-direction: row; align-items: center; flex-grow: 1; min-width: 200px;">
+            <ui:TextField name="InputField" style="flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="SaveAsSceneRow" style="display: none; flex-direction: row; align-items: center; margin-top: 6px;">
+            <ui:Toggle name="SaveAsSceneToggle" label="另存为场景" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Spacer" style="flex-grow: 1;" />
+        <ui:VisualElement name="ButtonRow" style="flex-direction: row; justify-content: flex-end;">
+            <ui:Button name="CancelButton" text="取消" style="width: 90px; height: 24px; margin-left: 8px;" />
+            <ui:Button name="ConfirmButton" text="确定" style="width: 90px; height: 24px; margin-left: 8px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

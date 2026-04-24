@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="True">
+    <Style src="../USS/TodoListWindow.uss" />
+    <ui:VisualElement name="WorkNoteContainer" class="section-slot" />
+    <ui:VisualElement name="ToolbarContainer" class="section-slot" />
+    <ui:VisualElement name="FilterBarContainer" class="section-slot" />
+    <ui:ScrollView name="ListScrollView" mode="Vertical" class="list-scroll">
+        <ui:VisualElement name="ListContainer" class="list-container" />
+    </ui:ScrollView>
+</ui:UXML>

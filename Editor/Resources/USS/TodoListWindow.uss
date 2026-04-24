@@ -1,0 +1,45 @@
+/* ==========================================================
+   TodoListWindow.uss  —  窗口全局共享样式
+   由 BuildUI() 显式加载到 rootVisualElement，对所有子元素生效
+   ========================================================== */
+
+/* === 列表 ScrollView / 容器 === */
+
+.list-scroll {
+    flex-grow: 1;
+}
+
+.list-container {
+    flex-direction: column;
+    padding-right: 2px;
+    padding-bottom: 4px;
+}
+
+/* === 布局工具类 === */
+
+.row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+/* === 字体工具类 === */
+
+.bold-label-12 {
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.bold-label-14 {
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.mini-label {
+    font-size: 10px;
+    -unity-text-align: middle-left;
+    white-space: normal;
+}

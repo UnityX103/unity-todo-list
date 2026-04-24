@@ -33,6 +33,20 @@ namespace Editor.TodoList
     }
 
     /// <summary>
+    /// 待办事项二级分类
+    /// </summary>
+    public enum TodoCategory
+    {
+        /// <summary>效果</summary>
+        [InspectorName("效果")]
+        Effect = 0,
+
+        /// <summary>程序</summary>
+        [InspectorName("程序")]
+        Program = 1
+    }
+
+    /// <summary>
     /// 待办事项类型
     /// </summary>
     public enum TodoType
@@ -94,6 +108,12 @@ namespace Editor.TodoList
         /// <summary>状态</summary>
         public TodoStatus Status;
 
+        /// <summary>二级分类</summary>
+        public TodoCategory Category;
+
+        /// <summary>是否置顶</summary>
+        public bool IsPinned;
+
         /// <summary>类型</summary>
         public TodoType Type;
 
@@ -112,6 +132,14 @@ namespace Editor.TodoList
         /// <summary>场景路径（当Type为SceneObject时使用）</summary>
         [HideInInspector]
         public string ScenePath;
+
+        /// <summary>场景GUID（当Type为SceneObject时使用）</summary>
+        [HideInInspector]
+        public string SceneGuid;
+
+        /// <summary>是否由“另存为场景”生成的场景引用</summary>
+        [HideInInspector]
+        public bool IsClonedSceneReference;
 
         /// <summary>场景物体路径（层级路径）</summary>
         [HideInInspector]
@@ -228,14 +256,46 @@ namespace Editor.TodoList
 
         private void LocateSceneObject()
         {
-            var currentScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene().path;
-            if (currentScene != ScenePath)
+            if (!TryResolveScenePath(out var targetScenePath, out var targetSceneGuid))
             {
+                EditorUtility.DisplayDialog("错误", "场景不存在或已被删除", "确定");
+                return;
+            }
+
+            if (ScenePath != targetScenePath || SceneGuid != targetSceneGuid)
+            {
+                Undo.RecordObject(this, "Update Todo Scene Reference");
+                ScenePath = targetScenePath;
+                SceneGuid = targetSceneGuid;
+                EditorUtility.SetDirty(this);
+            }
+
+            var currentScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene().path;
+            if (currentScene != targetScenePath)
+            {
+                var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(targetScenePath);
+                if (sceneAsset != null)
+                {
+                    Selection.activeObject = sceneAsset;
+                    EditorGUIUtility.PingObject(sceneAsset);
+                }
+
+                var sceneName = System.IO.Path.GetFileNameWithoutExtension(targetScenePath);
+                var shouldSwitch = EditorUtility.DisplayDialog(
+                    "切换场景",
+                    $"当前场景与目标场景不一致，是否切换到目标场景？\n目标场景: {sceneName}",
+                    "切换",
+                    "取消");
+                if (!shouldSwitch)
+                {
+                    return;
+                }
+
                 if (!UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 {
                     return;
                 }
-                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(ScenePath);
+                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(targetScenePath);
             }
 
             var obj = GameObject.Find(GameObjectPath);
@@ -248,6 +308,39 @@ namespace Editor.TodoList
             {
                 EditorUtility.DisplayDialog("错误", $"场景中未找到物体: {GameObjectPath}", "确定");
             }
+        }
+
+        public bool TryGetResolvedScenePath(out string resolvedScenePath)
+        {
+            return TryResolveScenePath(out resolvedScenePath, out _);
+        }
+
+        private bool TryResolveScenePath(out string resolvedScenePath, out string resolvedSceneGuid)
+        {
+            resolvedScenePath = null;
+            resolvedSceneGuid = null;
+
+            if (!string.IsNullOrEmpty(SceneGuid))
+            {
+                var guidPath = AssetDatabase.GUIDToAssetPath(SceneGuid);
+                if (!string.IsNullOrEmpty(guidPath))
+                {
+                    resolvedScenePath = guidPath;
+                    resolvedSceneGuid = SceneGuid;
+                }
+            }
+
+            if (string.IsNullOrEmpty(resolvedScenePath) && !string.IsNullOrEmpty(ScenePath))
+            {
+                resolvedScenePath = ScenePath;
+            }
+
+            if (string.IsNullOrEmpty(resolvedSceneGuid) && !string.IsNullOrEmpty(resolvedScenePath))
+            {
+                resolvedSceneGuid = AssetDatabase.AssetPathToGUID(resolvedScenePath);
+            }
+
+            return !string.IsNullOrEmpty(resolvedScenePath);
         }
 
         private void LocatePrefabChild()

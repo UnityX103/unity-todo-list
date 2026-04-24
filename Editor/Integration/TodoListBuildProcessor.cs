@@ -15,12 +15,7 @@ namespace Editor.TodoList
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            var guids = AssetDatabase.FindAssets($"t:{nameof(TodoListConfig)}");
-            if (guids.Length == 0)
-                return;
-
-            var path = AssetDatabase.GUIDToAssetPath(guids[0]);
-            var config = AssetDatabase.LoadAssetAtPath<TodoListConfig>(path);
+            var config = AssetDatabase.LoadAssetAtPath<TodoListConfig>(TodoProjectPaths.ConfigAssetPath);
 
             if (config == null || config.TodoItems == null)
                 return;
